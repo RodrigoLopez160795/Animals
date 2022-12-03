@@ -1,25 +1,27 @@
-import logo from './logo.svg';
-import './App.css';
+import { collection, getDocs } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
+import Main from './components/Main';
+import db from './firebase/firebaseConfig';
+import Loader from './components/Loader';
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+  const [animals, setAnimals] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    (function getData() {
+      getDocs(collection(db, 'animals')).then(({ docs }) => {
+        setAnimals([...docs].reduce((acc, cv) => [...acc, cv.data()], animals));
+      });
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (animals.length === 0) {
+      setIsLoading(true);
+    } else setIsLoading(false);
+  }, [animals]);
+
+  return <div>{isLoading ? <Loader /> : <Main animals={animals} />}</div>;
 }
 
 export default App;
