@@ -21,7 +21,9 @@ function Main({ animals }) {
   });
   useEffect(() => {
     if (query.length > 0) {
-      const data = animals.filter((a) => caseSensitive(a.name).includes(query));
+      const data = animals.filter((a) =>
+        caseSensitive(a.name).includes(caseSensitive(query))
+      );
       if (data.length > 0) {
         setResults(data.length);
         setReset(false);
